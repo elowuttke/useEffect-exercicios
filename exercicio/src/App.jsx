@@ -1,70 +1,81 @@
-import React, { useEffect, useState } from 'react'
-import styled from 'styled-components'
-import './styles.css'
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import "./styles.css";
 
 const TarefaList = styled.ul`
   padding: 0;
   width: 200px;
-`
+`;
 
 const Tarefa = styled.li`
   text-align: left;
-  text-decoration: ${({ completa }) => (completa ? 'line-through' : 'none')};
-`
+  text-decoration: ${({ completa }) => (completa ? "line-through" : "none")};
+`;
 
 const InputsContainer = styled.div`
   display: grid;
   grid-auto-flow: column;
   gap: 10px;
-`
+`;
 
 function App() {
-  const [tarefas, setTarefa] = useState([]);
+  const [tarefas, setTarefas] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  const [filtro, setFiltro] = useState("")
+  const [filtro, setFiltro] = useState("");
 
-  // useEffect() => {
-  //   () => {
-
-  //   },
-  //   []
-  // };
-
-  // useEffect() => {
-  //   () => {
-
-  //   },
-  //   []
-  // };
-
-  const onChangeInput = (event) => {
-    console.log("aaa");
+useEffect(() => {
+  const tarefasString = JSON.stringify(tarefas)
+  if(tarefas.length > 0){
+    localStorage.setItem("tarefas", tarefasString)
   }
+}, [tarefas]);
+
+useEffect(() => {
+  const pegaTarefa = localStorage.getItem("tarefas")
+  const arrayTarefa = JSON.parse(pegaTarefa)
+  if(arrayTarefa){
+      setTarefas(arrayTarefa)
+  }
+}, []);
+
+  const onChangeInput = (e) => {
+    setInputValue(e.target.value);
+  };
 
   const criaTarefa = () => {
-    console.log("aaa");
-  }
+    const novaTarefa = {
+      id: Date.now(),
+      texto: inputValue,
+      completa: false,
+    };
+    setTarefas([...tarefas, novaTarefa])
+    setInputValue("")
+  };
 
   const selectTarefa = (id) => {
-    console.log("aaa");
-  }
+    const tarefaCompletaTrueFalse = tarefas.map((elemento) => {
+      if (elemento.id === id) {
+        elemento.completa = !elemento.completa
+      } 
+      return elemento
+    });
+    setTarefas(tarefaCompletaTrueFalse)
+  };
 
   const onChangeFilter = (event) => {
-    console.log("aaa");
-  }
+    setFiltro(event.target.value)
+  };
 
-
-  const listaFiltrada = tarefas.filter(tarefa => {
+  const listaFiltrada = tarefas.filter((tarefa) => {
     switch (filtro) {
-      case 'pendentes':
-        return !tarefa.completa
-      case 'completas':
-        return tarefa.completa
+      case "pendentes":
+        return !tarefa.completa;
+      case "completas":
+        return tarefa.completa;
       default:
-        return true
+        return true;
     }
   });
-
 
   return (
     <div className="App">
@@ -84,7 +95,7 @@ function App() {
         </select>
       </InputsContainer>
       <TarefaList>
-        {listaFiltrada.map(tarefa => {
+        {listaFiltrada.map((tarefa) => {
           return (
             <Tarefa
               completa={tarefa.completa}
@@ -92,12 +103,11 @@ function App() {
             >
               {tarefa.texto}
             </Tarefa>
-          )
+          );
         })}
       </TarefaList>
     </div>
-  )
+  );
 }
 
-
-export default App
+export default App;
